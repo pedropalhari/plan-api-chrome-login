@@ -16,7 +16,9 @@ interface ScheduleItem {
 let lastScheduleFetch = moment("01/04/1997", "DD/MM/YYYY");
 let mySchedule: ScheduleItem[];
 
-async function getMyScheduleFromChrome() {
+let globalPage: puppeteer.Page;
+
+async function startPuppeteerAndGoToPage() {
   //Spawn chrome and connect puppeteer to it. This chrome was previously spawned on my computer without
   //--remote-debugging so I could add my Google account to it.
   let chromeDebugWSEndpoint: string = await new Promise((res) => {
@@ -53,11 +55,14 @@ async function getMyScheduleFromChrome() {
   });
 
   //Do puppeteery-stuff, get my daily schedule
-  const page = await browser.newPage();
+  globalPage = await browser.newPage();
 
-  await page.goto("https://getplan.co/today");
-  await page.waitForSelector("div.event-details");
-  let links: string[][] = await page.evaluate(() => {
+  await globalPage.goto("https://getplan.co/today");
+  await globalPage.waitForSelector("div.event-details");
+}
+
+async function getMyScheduleFromChrome() {
+  let links: string[][] = await globalPage.evaluate(() => {
     //@ts-ignore
     return (
       Array.from(document.querySelectorAll("div.event-details"))
@@ -82,8 +87,6 @@ async function getMyScheduleFromChrome() {
   //set it as a global var, also the date I used to get this schedule.
   lastScheduleFetch = moment();
   mySchedule = linksObject;
-
-  await browser.close();
 }
 
 // I like APIs, APIs are good.
@@ -92,13 +95,12 @@ const app = fastify();
 app.get("/schedule", async (req, res) => {
   //More than 1 hour? Oopsie it might be out of date, get it again.
   console.log(lastScheduleFetch.diff(moment(), "hours"));
-  if (lastScheduleFetch.diff(moment(), "hours") < 0) {
-    await getMyScheduleFromChrome();
-  }
+  await getMyScheduleFromChrome();
 
   res.send(mySchedule);
 });
 
+startPuppeteerAndGoToPage();
 app.listen(3000, "0.0.0.0", function (err, address) {
   if (err) {
     console.log(err);
