@@ -101,7 +101,7 @@ app.get("/schedule", async (req, res) => {
 });
 
 startPuppeteerAndGoToPage();
-app.listen(3000, "0.0.0.0", function (err, address) {
+app.listen(8800, "0.0.0.0", function (err, address) {
   if (err) {
     console.log(err);
     process.exit(1);

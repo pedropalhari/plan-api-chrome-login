@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsc -w",
-    "build": "tsc"
+    "build": "tsc",
+    "tunnel": "ssh -R 8800:localhost:8800 root@palhari.dev"
   },
   "license": "MIT",
   "dependencies": {
