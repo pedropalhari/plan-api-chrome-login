@@ -13,7 +13,7 @@
     "@types/puppeteer": "^3.0.0",
     "@types/puppeteer-core": "^2.0.0",
     "fastify": "^2.14.1",
-    "moment": "^2.26.0",
+    "moment": "^2.29.4",
     "puppeteer": "^4.0.0",
     "puppeteer-core": "^4.0.0",
     "puppeteer-extra-plugin-stealth": "^2.4.9",
